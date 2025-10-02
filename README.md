@@ -216,6 +216,4 @@ data['snapshot_filename'] = (sub(r'[^A-Za-z0-9._%/-]', '_', ui['image_file_name'
 
 ---
 
-## Additional Notes
-- Movie File Name also takes unsanitized input (not RCE in testing, but should be patched).  
 
