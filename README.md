@@ -3,6 +3,9 @@
 ## Summary
 During security testing of a MotionEye instance running in Docker, it was observed that client-side validation within the web UI can be bypassed. This allows arbitrary input to be submitted, including payloads that can trigger execution on the host container. The issue poses a risk of remote code execution (RCE) if exploited.
 
+**Affected Versions**: All versions up to and including 0.43.1b4    
+**Patch Status**: No patch available yet. A workaround is given in this advisory.
+
 ---
 
 ## Environment
