@@ -5,7 +5,11 @@ During security testing of a MotionEye instance running in Docker, it was observ
 
 **Affected Versions**: All versions up to and including 0.43.1b4    
 **Patch Status**: No patch available yet. A workaround is given in this advisory.    
-**project reference**: https://github.com/motioneye-project/motioneye
+**project reference**: https://github.com/motioneye-project/motioneye    
+**CWE**: CWE-20, CWE-78, CWE-116    
+**CVSS**:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H    
+**CVSS**: 7.2/10
+
 
 ---
 
